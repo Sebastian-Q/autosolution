@@ -1,0 +1,190 @@
+/***********USUARIOS********* */
+
+//Insertar a un usuario
+db.usuarios.insertOne({
+    name: "Christian",
+    email: "chris@gmail.com", password: "123456", role: "Usuario"
+})
+
+db.usuarios.createIndex({ email: 1 })
+
+//Busqueda por index
+db.usuarios.aggregate([
+    {
+        $match: {
+            email: "chris@gmail.com"
+        }
+    }
+])
+//Actualizar usuario
+db.usuarios.findOneAndUpdate({ _id: id },
+    { name: name, email: email, password: password }, { new: true });
+
+//Eliminar usuario
+db.usuarios.deleteOne({ _id: id });
+
+
+
+
+
+
+/*********PRODUCTOS************ */
+
+//insertar producto
+db.insertOne({
+    name: "Cubre asientos de auto",
+    description: "Para asientos de auto",
+    price: 200,
+    categoryId: "640cd4d23495940525fefd4a",
+    count: 2
+})
+
+db.products.createIndex({ name: 1 })
+
+//busqueda por index
+db.products.aggregate([
+    {
+        $match: {
+            name: "Cubre asientos de auto"
+        }
+    }
+])
+
+//actualizar producto
+db.products.findOneAndUpdate({ _id: id },
+    {
+        name: name,
+        description: description,
+        price: price,
+        category: category
+    },
+    { new: true });
+
+//eliminar un producto
+db.products.findByIdAndDelete({ _id: id })
+
+
+
+
+
+
+
+
+
+//***********CATEGORIA**************** */
+
+//insertar una categoria
+db.categories.insertOne({ name: "Aceites" })
+
+db.categories.createIndex({ name: 1 })
+
+//busqueda por index
+db.categories.aggregate([
+    {
+        $match: {
+            name: "Aceites"
+        }
+    }
+])
+
+//actualizar categoria
+db.categories.findOneAndUpdate({ _id: id }, { name: name }, { new: true });
+
+//eliminar categoria
+db.categories.deleteOne({ _id: id });
+
+
+
+
+
+
+
+
+/*********TALLER************ */
+
+//Insertar un taller
+db.tallers.insertOne({
+    name: "Escanear",
+    price: 900,
+    category: "Autos"
+})
+
+db.tallers.createIndex({ name: 1 })
+
+//busqueda por index
+db.tallers.aggregate([
+    {
+        $match: {
+            name: "Escanear"
+        }
+    }
+])
+
+//Actualizar taller
+db.tallers.findOneAndUpdate({ _id: id },
+    { name: name, price: price, category: category }, { new: true })
+
+//Eliminar taller
+db.tallers.deleteOne({ _id: id })
+
+
+
+
+
+
+
+
+//*********Compras**********+ */
+
+//Insertar compra   
+
+db.compras.insertOne({
+    price: 300,
+    buy: {
+        idProduct: "64309084cc92956b91e55101"
+    },
+    userId: "6411e60355e56fa0fcb152d7"
+})
+
+
+db.compras.createIndex({ user: 1,date:1 })
+
+//busqueda por index
+db.compras.find({user:"6411e60355e56fa0fcb152d7"})
+
+//actualizar en coleccion de usuario
+db.usuarios.findById({_id:"6411e60355e56fa0fcb152d7"})
+db.usuarios.buys.push({_id:"6430c8645236e55d45074028"})
+db.usuarios.save();
+
+
+
+
+
+
+
+
+
+//agrupar por usuario y sumar sus compras
+db.compras.aggregate([
+    {
+        $group: {
+            _id: "$user",
+            total: { $sum: "$price" }
+        }
+    }
+])
+
+
+db.compras.aggregate([
+    {
+   
+      $project: {
+        _id:0,
+        price:1,
+        buy:1,
+        total:{$sum:"$price"}
+    }
+    }
+  ]);
+  
